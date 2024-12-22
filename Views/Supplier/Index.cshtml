@@ -1,3 +1,101 @@
 ﻿@{
     Layout = "_SupplierDashboard";
 }
+
+@model SupplierDashboardViewModel
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Flexbox Container for Charts -->
+<div style="display: flex; justify-content: space-between; gap: 20px; margin: 20px auto;">
+    <!-- Bar Chart for Order Status Distribution -->
+    <div style="width: 48%;">
+        <canvas id="orderStatusChart"></canvas>
+    </div>
+
+    <!-- Pie Chart for Top Selling Categories -->
+    <div style="width: 48%;">
+        <canvas id="topSellingCategoriesChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Bar Chart for Order Status Distribution
+    var ctxBar = document.getElementById('orderStatusChart').getContext('2d');
+    var orderStatusChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Pending', 'Shipped', 'Delivered'],
+            datasets: [{
+                label: 'Order Status Distribution',
+                data: [
+    @Model.PendingOrdersCount,
+    @Model.ShippedOrdersCount,
+    @Model.DeliveredOrdersCount
+                    ],
+                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(75, 192, 192, 0.2)'],
+                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Pie Chart for Top Selling Categories
+    var ctxPie = document.getElementById('topSellingCategoriesChart').getContext('2d');
+    var topSellingCategoriesChart = new Chart(ctxPie, {
+        type: 'pie',
+        data: {
+            labels: [
+    @foreach (var item in Model.ProductCategoryDistribution)
+    {
+        @Html.Raw($"'{item.Key}',")
+    }
+                ],
+            datasets: [{
+                label: 'Top Selling Categories',
+                data: [
+    @foreach (var item in Model.ProductCategoryDistribution)
+    {
+        @item.Value @Html.Raw(",")
+    }
+                    ],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Top Selling Categories' // Updated title
+                }
+            }
+        }
+    });
+</script>

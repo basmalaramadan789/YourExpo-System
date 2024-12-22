@@ -28,7 +28,7 @@ public class SeedingRoles
 
             await userManager.CreateAsync(user, "Admin123!");
 
-            // Assign Admin role to the user
+            
             await userManager.AddToRoleAsync(user, "Admin");
         }
     }

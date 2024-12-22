@@ -1,0 +1,97 @@
+﻿@{
+    Layout = "_SupplierDashboard";
+}
+
+@model YourExpo.ViewModels.SupplierProfileViewModel
+
+<div class="profile-container">
+    <h2 class="profile-title">Supplier Profile</h2>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <h3>@Model.SupplierName</h3>
+            <p class="approval-status">@(Model.IsApproved ? "Approved" : "Not Approved")</p>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="profile-details">
+            <div class="detail-item">
+                <strong>Contact Information:</strong>
+                <p>@Model.ContactInfo</p>
+            </div>
+
+            <div class="detail-item">
+                <strong>Approval Status:</strong>
+                <p>@(Model.IsApproved ? "Approved" : "Not Approved")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* General Styles */
+    body {
+        background-color: #f0f9f4; /* Light green background */
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+
+    .profile-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #ffffff; /* White background */
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-title {
+        text-align: center;
+        color: #2e7d32; /* Dark green */
+        margin-bottom: 20px;
+        font-size: 28px;
+    }
+
+    .profile-card {
+        background-color: #e8f5e9; /* Light green card background */
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .profile-header h3 {
+            color: #1b5e20; /* Deep green */
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+    .approval-status {
+        font-weight: bold;
+        color: @(Model.IsApproved ? "#4caf50" : "#f44336"); /* Green for approved, red for not approved */
+    }
+
+    .profile-details {
+        margin-top: 20px;
+    }
+
+    .detail-item {
+        margin-bottom: 15px;
+    }
+
+        .detail-item strong {
+            color: #2e7d32; /* Dark green */
+            font-weight: bold;
+        }
+
+        .detail-item p {
+            margin-top: 5px;
+            color: #555;
+        }
+</style>

@@ -1,0 +1,60 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Under Review</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .custom-card {
+            background: linear-gradient(135deg, #2ecc71, #1abc9c);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+            .custom-card h3 {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 15px;
+            }
+
+            .custom-card p {
+                font-size: 16px;
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }
+
+            .custom-card .btn-home {
+                background-color: #ffffff;
+                color: #2ecc71;
+                border: none;
+                border-radius: 5px;
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+                text-decoration: none;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+
+                .custom-card .btn-home:hover {
+                    background-color: #1abc9c;
+                    color: white;
+                }
+    </style>
+</head>
+<body>
+    <div class="custom-card">
+        <h3>Your account is under review!</h3>
+        <p>Please wait for admin approval. You will be notified once your account is approved.</p>
+        <a href="/Home/Index" class="btn-home">Go Home</a>
+    </div>
+</body>
+</html>

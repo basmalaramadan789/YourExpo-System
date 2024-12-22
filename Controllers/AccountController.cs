@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using YourExpo.Models;
 using YourExpo.Persistence;
 using YourExpo.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace YourExpo.Controllers;
 public class AccountController : Controller
@@ -101,14 +103,64 @@ public class AccountController : Controller
         return View();
     }
 
-    
+
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        var user = await _userManager.FindByEmailAsync(model.Email);
+    //        if (user == null)
+    //        {
+    //            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+    //            return View(model);
+    //        }
+
+    //        var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
+
+    //        if (result.Succeeded)
+    //        {
+
+    //            var roles = await _userManager.GetRolesAsync(user);
+
+
+    //            if (roles.Contains("Supplier"))
+    //            {
+    //                return RedirectToAction("SupplierDashboard", "Supplier");
+    //            }
+    //            else if (roles.Contains("Customer"))
+    //            {
+    //                return RedirectToAction("Index", "Home");
+    //            }
+    //            else if (roles.Contains("Admin"))
+    //            {
+    //                return RedirectToAction("AdminDashboard", "Admin");
+    //            }
+    //            else
+    //            {
+    //                return RedirectToAction("Index", "Home");
+    //            }
+    //        }
+
+    //        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+    //    }
+
+    //    return View(model);
+    //}
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
     {
         if (ModelState.IsValid)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            // Use Include to load related Supplier data
+            var user = await _userManager.Users
+                .Include(u => u.Supplier)
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
+
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -119,13 +171,35 @@ public class AccountController : Controller
 
             if (result.Succeeded)
             {
-               
                 var roles = await _userManager.GetRolesAsync(user);
 
-                
                 if (roles.Contains("Supplier"))
                 {
-                    return RedirectToAction("SupplierDashboard", "Supplier");
+                    // Check if the supplier is approved
+                    if (user.Supplier != null && user.Supplier.IsApproved)
+                    {
+                        // Add claim for supplier approval
+                        var claims = new List<Claim>
+        {
+            new Claim("IsSupplierApproved", "True")
+        };
+                        var identity = new ClaimsIdentity(claims, "Custom");
+                        await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, additionalClaims: claims);
+
+                        return RedirectToAction("Index", "Supplier"); // Redirect to Supplier Dashboard
+                    }
+                    else
+                    {
+                        // Add claim for supplier approval status
+                        var claims = new List<Claim>
+        {
+            new Claim("IsSupplierApproved", "False")
+        };
+                        var identity = new ClaimsIdentity(claims, "Custom");
+                        await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, additionalClaims: claims);
+
+                        return RedirectToAction("ApprovedSupplier", "Supplier"); // Redirect to the approval notification page
+                    }
                 }
                 else if (roles.Contains("Customer"))
                 {
@@ -133,7 +207,7 @@ public class AccountController : Controller
                 }
                 else if (roles.Contains("Admin"))
                 {
-                    return RedirectToAction("AdminDashboard", "Admin");
+                    return RedirectToAction("Index", "Admin");
                 }
                 else
                 {
@@ -146,6 +220,7 @@ public class AccountController : Controller
 
         return View(model);
     }
+
 
 
 

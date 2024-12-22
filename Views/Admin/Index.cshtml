@@ -1,0 +1,151 @@
+﻿@{
+    Layout = "_Dashboard";
+}
+
+@{
+    var totalProducts = ViewBag.TotalProducts;
+    var totalOrders = ViewBag.TotalOrders;
+    var topSupplier = ViewBag.TopSupplier;
+    var topSupplierProductCount = ViewBag.TopSupplierProductCount;
+    /////////////////////
+    var supplierNames = ViewBag.SupplierNames as List<string>;
+    var productCounts = ViewBag.ProductCounts as List<int>;
+    var backgroundColors = new List<string>
+    {
+        "rgba(75, 192, 192, 0.5)", // Light green
+        "rgba(54, 162, 235, 0.5)", // Light blue
+        "rgba(255, 206, 86, 0.5)", // Yellow
+        "rgba(153, 102, 255, 0.5)", // Purple
+        "rgba(255, 99, 132, 0.5)"  // Red
+    };
+    var borderColors = new List<string>
+    {
+        "rgba(75, 192, 192, 1)", // Dark green
+        "rgba(54, 162, 235, 1)", // Dark blue
+        "rgba(255, 206, 86, 1)", // Dark yellow
+        "rgba(153, 102, 255, 1)", // Dark purple
+        "rgba(255, 99, 132, 1)"   // Dark red
+    };
+}
+
+<style>
+    /* Custom Green Theme for Cards */
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: white; /* White background for cards */
+        margin-bottom: 1rem;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+    .card-body {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #2ecc71; /* Green text for titles */
+    }
+
+    .card-text {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #333; /* Dark gray text for values */
+    }
+
+    .card-header {
+        background-color: #2ecc71; /* Green header */
+        color: white;
+        border-radius: 10px 10px 0 0; /* Rounded top corners */
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    /* Chart Container */
+    .chart-container {
+        width: 80%;
+        margin: auto;
+        margin-top: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        background-color: white;
+    }
+</style>
+
+<div class="row">
+    <!-- Total Products Card -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Total Products</div>
+            <div class="card-body">
+                <p class="card-text">@ViewBag.TotalProducts Products</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Orders Card -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Total Orders</div>
+            <div class="card-body">
+                <p class="card-text">@ViewBag.TotalOrders Orders</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Supplier Card -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Top Supplier by Product Count</div>
+            <div class="card-body">
+                <p class="card-text">@ViewBag.TopSupplier (@ViewBag.TopSupplierProductCount Products)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Container -->
+<div class="chart-container">
+    <canvas id="topSuppliersChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('topSuppliersChart').getContext('2d');
+    const topSuppliersChart = new Chart(ctx, {
+        type: 'bar', // Bar chart
+        data: {
+            labels: @Html.Raw(Json.Serialize(supplierNames)), // Supplier names
+            datasets: [{
+                label: 'Product Count',
+                data: @Html.Raw(Json.Serialize(productCounts)), // Product counts
+                backgroundColor: @Html.Raw(Json.Serialize(backgroundColors)), // Dynamic colors
+                borderColor: @Html.Raw(Json.Serialize(borderColors)), // Dynamic border colors
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true },
+                title: { display: true, text: 'Top Suppliers by Product Count' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

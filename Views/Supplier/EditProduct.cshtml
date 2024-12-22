@@ -1,0 +1,73 @@
+﻿@model Product
+
+@{
+    Layout = "_SupplierDashboard";
+}
+
+<h1>@ViewData["Title"] - Edit Product</h1>
+
+<form asp-action="EditProduct" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label for="Name">Product Name</label>
+        <input type="text" class="form-control" id="Name" asp-for="Name" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Product Description</label>
+        <textarea class="form-control" id="Description" asp-for="Description" required></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Quantity">Quantity</label>
+        <input type="number" class="form-control" id="Quantity" asp-for="Quantity" min="1" required />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Price">Price</label>
+        <input type="number" class="form-control" id="Price" asp-for="Price" min="0.01" step="0.01" required />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Specifications">Product Specifications</label>
+        <textarea class="form-control" id="Specifications" asp-for="Specifications"></textarea>
+        <span asp-validation-for="Specifications" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="CategoryId">Category</label>
+        <select class="form-control" asp-for="CategoryId" asp-items="ViewBag.Categories" required>
+            <option value="">-- Select Category --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="TargetCountryIds">Target Countries</label>
+        <select name="TargetCountryIds" id="TargetCountryIds" class="form-control" asp-items="ViewBag.TargetCountries" multiple="multiple"></select>
+        <span asp-validation-for="TargetCountryIds" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="ImageFile">Product Image</label>
+        <input type="file" class="form-control" id="ImageFile" name="ImageFile" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <!-- Button Group -->
+    <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="@Url.Action("GetSupplierProduct", "Supplier")" class="btn btn-warning">Back to Product List</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

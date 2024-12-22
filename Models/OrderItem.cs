@@ -13,4 +13,7 @@ public class OrderItem
 
     [ForeignKey("OrderId")]
     public Order Order { get; set; }
+
+
+    public Product Product { get; set; }
 }
