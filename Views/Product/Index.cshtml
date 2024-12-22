@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Product>
+
+@{
+    Layout = "_Dashboard";
+}
+
+<style>
+    /* Custom Green and Orange Theme */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Adds space between rows */
+    }
+
+        .table thead th {
+            background-color: #28a745; /* Green header background */
+            color: white; /* White text for headers */
+            border: none; /* Remove border */
+        }
+
+        .table tbody tr {
+            background-color: #f8f9fa; /* Light gray background for rows */
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+
+            .table tbody tr:hover {
+                background-color: #ffc107; /* Orange background on hover */
+                color: white; /* White text on hover */
+            }
+
+        .table tbody td {
+            border: none; /* Remove border */
+        }
+
+    .btn-success {
+        background-color: #28a745; /* Green button */
+        border-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838; /* Darker green on hover */
+            border-color: #1e7e34;
+        }
+
+    .btn-danger {
+        background-color: #dc3545; /* Red button */
+        border-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333; /* Darker red on hover */
+            border-color: #bd2130;
+        }
+
+    .btn-add {
+        background-color: #ffc107; /* Orange button */
+        border-color: #ffc107;
+    }
+
+        .btn-add:hover {
+            background-color: #e0a800; /* Darker orange on hover */
+            border-color: #d39e00;
+        }
+</style>
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <!-- Add New Product Button Above the Table -->
+    <div class="mb-3">
+        <a href="@Url.Action("Create", "Product")" class="btn btn-add">Add New Product</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Target Countries</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Quantity</td>
+                    <td>@product.Price</td>
+                    <td>@product.Category?.Name</td>
+                    <td>
+                        @if (product.ProductTargetCountries != null && product.ProductTargetCountries.Any())
+                        {
+                            var targetCountries = string.Join(", ", product.ProductTargetCountries.Select(tc => tc.TargetCountry?.Name));
+                            <span>@targetCountries</span>
+                        }
+                        else
+                        {
+                            <span>No Target Countries</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Product", new { id = product.Id })" class="btn btn-success btn-sm">Edit</a>
+                        <a href="@Url.Action("Delete", "Product", new { id = product.Id })" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

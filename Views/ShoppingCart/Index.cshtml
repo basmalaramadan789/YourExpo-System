@@ -1,0 +1,288 @@
+﻿@model IEnumerable<ShoppingCart>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #4caf50;
+            color: white;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-body {
+            background-color: #ffffff;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+            .table th, .table td {
+                vertical-align: middle;
+            }
+
+            .table thead th {
+                background-color: #4caf50;
+                color: white;
+                border-color: #4caf50;
+            }
+
+            .table tbody tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            .table tbody tr:hover {
+                background-color: #e0f2e9;
+            }
+
+        .product-image {
+            max-width: 80px;
+            border-radius: 5px;
+        }
+
+        .summary-card {
+            background-color: #e0f2e9;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+            .summary-card h4 {
+                color: #4caf50;
+            }
+
+            .summary-card .btn-primary {
+                background-color: #4caf50;
+                border-color: #4caf50;
+            }
+
+                .summary-card .btn-primary:hover {
+                    background-color: #388e3c;
+                    border-color: #388e3c;
+                }
+
+        .quantity-input {
+            display: flex;
+            align-items: center;
+        }
+
+            .quantity-input button {
+                background-color: #4caf50;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .quantity-input button:hover {
+                    background-color: #388e3c;
+                }
+
+            .quantity-input input {
+                width: 50px;
+                text-align: center;
+                margin: 0 10px;
+                border: 1px solid #4caf50;
+                border-radius: 5px;
+            }
+
+        .remove-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .remove-button:hover {
+                background-color: #c82333;
+            }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">Your Shopping Cart</h2>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr data-product-id="@item.Product.Id">
+                                        <td>
+                                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="product-image me-2">
+                                            @item.Product.Name
+                                        </td>
+                                        <td>$@item.Product.Price</td>
+                                        <td>
+                                           @*  <div class="quantity-input">
+                                                <button onclick="updateQuantity('@item.Product.Id', '@item.Count', -1)">-</button>
+                                                <input type="text" id="quantity-@item.Product.Id" value="@item.Count" readonly />
+                                                <button onclick="updateQuantity('@item.Product.Id', '@item.Count', 1)">+</button>
+                                            </div> *@
+
+                                            <button class="btn btn-success btn-sm" onclick="updateQuantity(@item.ProductId, @item.Count - 1)">-</button>
+                                            <span>@item.Count / Kg</span>
+                                            <button class="btn btn-success btn-sm" onclick="updateQuantity(@item.ProductId, @item.Count + 1)">+</button>
+                                        </td>
+                                        <td id="total-@item.Product.Id">$@(item.Product.Price * item.Count)</td>
+                                       @*  <td>
+                                            <button class="remove-button" onclick="removeItem('@item.ProductId')">Remove</button>
+                                        </td> *@
+
+                                        <td>
+                                            <form asp-action="RemoveFromCart" method="post">
+                                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                                <button type="submit" class="btn btn-danger">Remove</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="summary-card">
+                    <h4 class="mb-3">Order Summary</h4>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <p class="fw-bold">Total Items:</p>
+                        <p id="total-items">@Model.Sum(item => item.Count) / Kg</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class="fw-bold">Total Price:</p>
+                        <p id="total-price">$@Model.Sum(item => item.Product.Price * item.Count)</p>
+                    </div>
+                    <hr>
+                    <a href="/Order/Checkout" class="btn btn-primary w-100">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // function updateQuantity(productId, currentQuantity, change) {
+        //     // Calculate the new quantity
+        //     let newQuantity = parseInt(currentQuantity) + change;
+
+        //     // Ensure the quantity is at least 1
+        //     if (newQuantity < 1) {
+        //         newQuantity = 1;
+        //     }
+
+        //     // Update the quantity input field
+        //     document.getElementById(`quantity-${productId}`).value = newQuantity;
+
+        //     // Send an AJAX request to update the quantity on the server
+        //     fetch(`/ShoppingCart/UpdateQuantity/${productId}/${newQuantity}`, {
+        //         method: 'POST'
+        //     })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             // Update the total items and total price in the summary
+        //             document.getElementById('total-items').innerText = data.totalItems;
+        //             document.getElementById('total-price').innerText = `$${data.totalPrice.toFixed(2)}`;
+
+        //             // Update the individual row total
+        //             const productPrice = parseFloat(document.querySelector(`#total-${productId}`).previousElementSibling.innerText.replace('$', ''));
+        //             document.querySelector(`#total-${productId}`).innerText = `$${(productPrice * newQuantity).toFixed(2)}`;
+        //         })
+        //         .catch(error => {
+        //             console.error('Error updating quantity:', error);
+        //         });
+        // }
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) {
+                alert('the quantity must not be less than 1 Kg');
+                return;
+            }
+
+            $.ajax({
+                url: '/ShoppingCart/UpdateQuantity',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    newQuantity: newQuantity
+                },
+                success: function (response) {
+                    
+                    $('#totalItems').text(response.totalItems);
+                    $('#totalPrice').text(response.totalPrice.toFixed(2));
+                    location.reload();  
+                },
+                error: function () {
+                    alert('error when adding ');
+                }
+            });
+        }
+
+        function removeItem(productId) {
+            if (productId <= 0) {
+                console.error('Invalid ProductId:', productId);
+                return; // Prevent removing item if productId is invalid
+            }
+
+            // Send an AJAX request to remove the item from the cart
+            fetch(`/ShoppingCart/RemoveFromCart/${productId}`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the total items and total price in the summary
+                    document.getElementById('total-items').innerText = data.totalItems;
+                    document.getElementById('total-price').innerText = `$${data.totalPrice.toFixed(2)}`;
+
+                    // Remove the row from the table
+                    document.querySelector(`tr[data-product-id="${productId}"]`).remove();
+                })
+                .catch(error => {
+                    console.error('Error removing item:', error);
+                });
+        }
+    </script>
+</body>
+</html>
